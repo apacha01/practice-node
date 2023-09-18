@@ -1,3 +1,9 @@
+{{#if logged}}
+<form action="/" method="post">
+	<input type="checkbox" hidden name="loggedOut" id="loggedOut" />
+	<button>Log Out</button>
+</form>
+{{else}}
 <form method="post" action="/login">
 	<label for="name">Usuario</label>
 	<input type="text" name="name" id="name" placeholder="Pepito, Jorge..." />
@@ -5,3 +11,4 @@
 	<input type="password" name="pass" id="pass" placeholder="123, 456..." />
 	<button id="submit-btn">Enviar</button>
 </form>
+{{/if}}

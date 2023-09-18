@@ -41,9 +41,16 @@ app.get('/', (req, res) => {
 	res.render('home', {title: 'Home'});
 });
 
+app.post('/', (req, res) => {
+	logIn.logged = false;
+	logIn.id = null;
+	res.setHeader('Content-Type', 'text/html', 'charset=utf-8');
+	res.render('home', {title: 'Home'});
+});
+
 app.get('/login', (req, res) => {
 	res.setHeader('Content-Type', 'text/html', 'charset=utf-8');
-	res.render('login', {title: 'Login'});
+	res.render('login', {title: 'Login', logged: logIn.logged});
 });
 
 app.post('/login', (req, res) => {
