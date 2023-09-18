@@ -1,5 +1,7 @@
 const express = require('express');
 const bodyParse = require('body-parser');
+const { engine } = require('express-handlebars');
+const { resolve } = require('path');
 const users = require('./src/users.json');
 const data = require('./src/data.json');
 
@@ -24,6 +26,9 @@ const getUserMessages = (id) => {
 const app = express();
 
 app.use(bodyParse.urlencoded({ extended: true }));
+app.engine('handlebars', engine());
+app.set('view engine', 'handlebars');
+app.set('views', resolve(__dirname + '/views'));
 
 app.listen(3000, () => {
 	console.log('Server running on port 3000');
@@ -31,19 +36,20 @@ app.listen(3000, () => {
 
 app.get('/', (req, res) => {
 	res.setHeader('Content-Type', 'text/html', 'charset=utf-8');
-	res.sendFile('index.html', {root: 'public'});
+	res.render('home', {title: 'Home'});
 });
 
 app.get('/login', (req, res) => {
 	res.setHeader('Content-Type', 'text/html', 'charset=utf-8');
-	res.sendFile('login.html', {root: 'public'});
+	res.render('login', {title: 'Login'});
 });
 
 app.post('/login', (req, res) => {
 	res.setHeader('Content-Type', 'text/html', 'charset=utf-8');
 
 	if (checkUserExist(req.body.name, req.body.pass)) {
-		res.sendFile('messages.html', {root: 'public'});
+		const messages = getUserMessages(getUserId(req.body.name, req.body.pass));
+		res.render('messages', {messages});
 	}
 	else {
 		res.send('<h1>Credenciales Incorrectas</h1>');
@@ -52,7 +58,7 @@ app.post('/login', (req, res) => {
 
 app.get('/contact', (req, res) => {
 	res.setHeader('Content-Type', 'text/html', 'charset=utf-8');
-	res.sendFile('contact.html', {root: 'public'});
+	res.render('contact', {title: 'Contact'});
 });
 
 app.use((req, res) => {
