@@ -26,10 +26,6 @@ const getUserId = (name) => {
 	return users.find(u => u.name === name)?.id;
 };
 
-const getUserName = (id) => {
-	return users.find(u => u.id === id).name;
-};
-
 const getUserMessages = (id) => {
 	return data.find(u => u.id === id).messages;
 };
@@ -108,7 +104,6 @@ app.post('/contact', (req, res) => {
 		res.setHeader('Content-Type', 'text/html', 'charset=utf-8');
 		res.render('messageSend', {title: 'Exito'});
 	}
-
 });
 
 app.use((req, res) => {
