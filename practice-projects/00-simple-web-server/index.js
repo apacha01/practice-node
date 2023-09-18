@@ -6,7 +6,15 @@ const users = require('./src/users.json');
 const data = require('./src/data.json');
 
 // UTILS
-const checkUserExist = (name, pass) => {
+const checkUserExist = (name) => {
+	for (const u of users) {
+		if (u.name === name)
+			return true;
+	}
+	return false;
+};
+
+const checkUserPass = (name, pass) => {
 	for (const u of users) {
 		if (u.name === name && u.password === pass)
 			return true;
@@ -14,8 +22,12 @@ const checkUserExist = (name, pass) => {
 	return false;
 };
 
-const getUserId = (name, pass) => {
-	return users.find(u => u.name === name && u.password === pass).id;
+const getUserId = (name) => {
+	return users.find(u => u.name === name)?.id;
+};
+
+const getUserName = (id) => {
+	return users.find(u => u.id === id).name;
 };
 
 const getUserMessages = (id) => {
@@ -54,7 +66,7 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-	if (checkUserExist(req.body.name, req.body.pass)) {
+	if (checkUserPass(req.body.name, req.body.pass)) {
 		logIn.logged = true;
 		logIn.id = getUserId(req.body.name, req.body.pass);
 		res.redirect(`/messages/${logIn.id}`);
@@ -65,20 +77,38 @@ app.post('/login', (req, res) => {
 	}
 });
 
+app.get('/messages/:id', (req, res) => {
+	if (logIn.logged) {
+		if(logIn.id != parseInt(req.params.id)){
+			res.redirect('/error', {title: 'Error', error: 'No puedes ver los mensajes de otro usuario'});
+		}
+		const messages = getUserMessages(parseInt(req.params.id));
+		res.render('messages', {title:'Mensajes', messages, logged: logIn.logged});
+	}
+	else {
+		res.send('<p>Necesitas logearte para leer tus mensajes</p>');
+	}
+});
+
 app.get('/contact', (req, res) => {
 	res.setHeader('Content-Type', 'text/html', 'charset=utf-8');
 	res.render('contact', {title: 'Contact'});
 });
 
-app.get('/messages/:id', (req, res, next) => {
-	if(logIn.id != parseInt(req.params.id)) next();
-	if (logIn.logged) {
-		const messages = getUserMessages(parseInt(req.params.id));
-		res.render('messages', {messages, logged: logIn.logged});
+app.post('/contact', (req, res) => {
+	const date = new Date().getTime();
+	const { from, to, message } = req.body;
+
+	if(!checkUserExist(to)) {
+		res.render('error', {title: 'Error', error: 'Ese usuario no existe'});
 	}
 	else {
-		res.send('<p>Necesitas logearte para leer tus mensajes</p>');
+		data.find(u => u.id === getUserId(to)).messages.push({date, from: from, message});
+
+		res.setHeader('Content-Type', 'text/html', 'charset=utf-8');
+		res.render('messageSend', {title: 'Exito'});
 	}
+
 });
 
 app.use((req, res) => {
