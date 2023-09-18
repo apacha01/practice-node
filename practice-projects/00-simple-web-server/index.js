@@ -30,6 +30,8 @@ app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
 app.set('views', resolve(__dirname + '/views'));
 
+let logIn = {id: null, logged: false};
+
 app.listen(3000, () => {
 	console.log('Server running on port 3000');
 });
@@ -45,13 +47,13 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-	res.setHeader('Content-Type', 'text/html', 'charset=utf-8');
-
 	if (checkUserExist(req.body.name, req.body.pass)) {
-		const messages = getUserMessages(getUserId(req.body.name, req.body.pass));
-		res.render('messages', {messages});
+		logIn.logged = true;
+		logIn.id = getUserId(req.body.name, req.body.pass);
+		res.redirect(`/messages/${logIn.id}`);
 	}
 	else {
+		res.setHeader('Content-Type', 'text/html', 'charset=utf-8');
 		res.send('<h1>Credenciales Incorrectas</h1>');
 	}
 });
@@ -59,6 +61,17 @@ app.post('/login', (req, res) => {
 app.get('/contact', (req, res) => {
 	res.setHeader('Content-Type', 'text/html', 'charset=utf-8');
 	res.render('contact', {title: 'Contact'});
+});
+
+app.get('/messages/:id', (req, res, next) => {
+	if(logIn.id != parseInt(req.params.id)) next();
+	if (logIn.logged) {
+		const messages = getUserMessages(parseInt(req.params.id));
+		res.render('messages', {messages, logged: logIn.logged});
+	}
+	else {
+		res.send('<p>Necesitas logearte para leer tus mensajes</p>');
+	}
 });
 
 app.use((req, res) => {

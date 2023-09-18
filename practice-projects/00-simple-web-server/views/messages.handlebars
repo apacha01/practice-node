@@ -1,12 +1,16 @@
+{{#if logged}}
 <table>
 	<thead>
 		<tr>
-			<th>Fecha</th>
-			<th>Nombre</th>
-			<th>Mensaje</th>
+			<th style="padding: 10px 20px;">Fecha</th>
+			<th style="padding: 10px 20px;">Nombre</th>
+			<th style="padding: 10px 20px;">Mensaje</th>
 		</tr>
 	</thead>
 	<tbody>
 		{{> userMessages}}
 	</tbody>
 </table>
+{{else}}
+<p>No puedes ver los mensajes si no te logeas</p>
+{{/if}}
