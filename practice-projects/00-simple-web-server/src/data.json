@@ -1,0 +1,16 @@
+[
+	{
+		"id": 1,
+		"name": "jose",
+		"messages": [
+			{"date": "1695061765559", "from": "pepito", "message": "hola"}
+		]
+	},
+	{
+		"id": 2,
+		"name": "pepito",
+		"messages": [
+			{"date": "1695061777964", "from": "jose", "message": "hola"}
+		]
+	}
+]
